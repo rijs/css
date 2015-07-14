@@ -39,31 +39,44 @@ module.exports = function includes(pattern){
 },{}],5:[function(require,module,exports){
 var is = require('is')
   , to = require('to')
+  , owner = require('owner')
 
 module.exports = function log(prefix){
   return function(d){
+    if (!owner.console || !console.log.apply) return d;
     is.arr(arguments[2]) && (arguments[2] = arguments[2].length)
     var args = to.arr(arguments)
-    args.unshift(''.grey ? prefix.grey : prefix)
+    args.unshift(prefix.grey ? prefix.grey : prefix)
     return console.log.apply(console, args), d
   }
 }
-},{"is":6,"to":7}],6:[function(require,module,exports){
-module.exports = { 
-  fn     : isFunction
-, str    : isString
-, num    : isNumber
-, obj    : isObject
-, truthy : isTruthy
-, falsy  : isFalsy
-, arr    : isArray
-, null   : isNull
-, def    : isDef
-, in     : isIn
+},{"is":6,"owner":7,"to":9}],6:[function(require,module,exports){
+module.exports = is
+is.fn     = isFunction
+is.str    = isString
+is.num    = isNumber
+is.obj    = isObject
+is.lit    = isLiteral
+is.bol    = isBoolean
+is.truthy = isTruthy
+is.falsy  = isFalsy
+is.arr    = isArray
+is.null   = isNull
+is.def    = isDef
+is.in     = isIn
+
+function is(v){
+  return function(d){
+    return d == v
+  }
 }
 
 function isFunction(d) {
   return typeof d == 'function'
+}
+
+function isBoolean(d) {
+  return typeof d == 'boolean'
 }
 
 function isString(d) {
@@ -76,6 +89,11 @@ function isNumber(d) {
 
 function isObject(d) {
   return typeof d == 'object'
+}
+
+function isLiteral(d) {
+  return typeof d == 'object' 
+      && !(d instanceof Array)
 }
 
 function isTruthy(d) {
@@ -100,10 +118,18 @@ function isDef(d) {
 
 function isIn(set) {
   return function(d){
-    return ~set.indexOf(d)
+    return  set.indexOf 
+         ? ~set.indexOf(d)
+         :  d in set
   }
 }
 },{}],7:[function(require,module,exports){
+(function (global){
+module.exports = require('client') ? /* istanbul ignore next */ window : global
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"client":8}],8:[function(require,module,exports){
+module.exports = typeof window != 'undefined'
+},{}],9:[function(require,module,exports){
 module.exports = { 
   arr : toArray
 }
