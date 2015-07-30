@@ -4,4 +4,6 @@
 
 Allows registering CSS resources. Must be a plain string, with the name ending in `.css`
 
-`ripple('some.css', file('./styles/some.css'))`
+```js
+ripple('some.css', file('./styles/some.css'))
+```
