@@ -26,31 +26,15 @@ var includes = _interopRequire(require("utilise/includes"));
 var log = _interopRequire(require("utilise/log"));
 
 log = log("[ri/types/css]");
-},{"utilise/includes":2,"utilise/log":3}],2:[function(require,module,exports){
-module.exports = require('includes')
-},{"includes":4}],3:[function(require,module,exports){
-module.exports = require('log')
-},{"log":5}],4:[function(require,module,exports){
+},{"utilise/includes":3,"utilise/log":5}],2:[function(require,module,exports){
+module.exports = typeof window != 'undefined'
+},{}],3:[function(require,module,exports){
 module.exports = function includes(pattern){
   return function(d){
-    return ~d.indexOf(pattern)
+    return d && d.indexOf && ~d.indexOf(pattern)
   }
 }
-},{}],5:[function(require,module,exports){
-var is = require('is')
-  , to = require('to')
-  , owner = require('owner')
-
-module.exports = function log(prefix){
-  return function(d){
-    if (!owner.console || !console.log.apply) return d;
-    is.arr(arguments[2]) && (arguments[2] = arguments[2].length)
-    var args = to.arr(arguments)
-    args.unshift(prefix.grey ? prefix.grey : prefix)
-    return console.log.apply(console, args), d
-  }
-}
-},{"is":6,"owner":7,"to":9}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = is
 is.fn     = isFunction
 is.str    = isString
@@ -118,23 +102,51 @@ function isDef(d) {
 
 function isIn(set) {
   return function(d){
-    return  set.indexOf 
-         ? ~set.indexOf(d)
-         :  d in set
+    return !set ? false  
+         : set.indexOf ? ~set.indexOf(d)
+         : d in set
   }
 }
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+var is = require('utilise/is')
+  , to = require('utilise/to')
+  , owner = require('utilise/owner')
+
+module.exports = function log(prefix){
+  return function(d){
+    if (!owner.console || !console.log.apply) return d;
+    is.arr(arguments[2]) && (arguments[2] = arguments[2].length)
+    var args = to.arr(arguments)
+    args.unshift(prefix.grey ? prefix.grey : prefix)
+    return console.log.apply(console, args), d
+  }
+}
+},{"utilise/is":4,"utilise/owner":6,"utilise/to":7}],6:[function(require,module,exports){
 (function (global){
-module.exports = require('client') ? /* istanbul ignore next */ window : global
+module.exports = require('utilise/client') ? /* istanbul ignore next */ window : global
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"client":8}],8:[function(require,module,exports){
-module.exports = typeof window != 'undefined'
-},{}],9:[function(require,module,exports){
+},{"utilise/client":2}],7:[function(require,module,exports){
 module.exports = { 
-  arr : toArray
+  arr: toArray
+, obj: toObject
 }
 
 function toArray(d){
   return Array.prototype.slice.call(d, 0)
+}
+
+function toObject(d) {
+  var by = 'id'
+    , o = {}
+
+  return arguments.length == 1 
+    ? (by = d, reduce)
+    : reduce.apply(this, arguments)
+
+  function reduce(p,v,i){
+    if (i === 0) p = {}
+    p[v[by]] = v
+    return p
+  }
 }
 },{}]},{},[1]);
