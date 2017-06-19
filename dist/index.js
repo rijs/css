@@ -21,6 +21,10 @@ function css(ripple) {
     header: 'text/css',
     check: function check(res) {
       return (0, _includes2.default)('.css')(res.name);
+    },
+    parse: function parse(res) {
+      res.headers.hash = djb(res.body);
+      return res;
     }
   };
 
@@ -28,3 +32,12 @@ function css(ripple) {
 }
 
 var log = require('utilise/log')('[ri/types/css]');
+
+var djb = function djb(str) {
+  var hash = 5381,
+      i = str.length;
+
+  while (i) {
+    hash = hash * 33 ^ str.charCodeAt(--i);
+  }return hash >>> 0;
+};
