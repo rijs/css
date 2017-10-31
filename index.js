@@ -1,10 +1,12 @@
 // -------------------------------------------
 // Exposes a convenient global instance 
 // -------------------------------------------
-export default function css(ripple){
+module.exports = function css(ripple){
   log('creating')
   ripple.types['text/css'] = {
     header: 'text/css'
+  , selector: res => `[css~="${res.name}"]`
+  , extract: el => (attr(`css`)(el) || '').split(' ')
   , check(res){ return includes('.css')(res.name) }
   , parse(res){ 
       res.headers.hash = djb(res.body)
@@ -15,8 +17,9 @@ export default function css(ripple){
   return ripple
 }
 
-import includes from 'utilise/includes'
-const log = require('utilise/log')('[ri/types/css]')
+const includes = require('utilise/includes')
+    , attr = require('utilise/attr')
+    , log = require('utilise/log')('[ri/types/css]')
 
 const djb = str => {
   let hash = 5381
