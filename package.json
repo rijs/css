@@ -37,6 +37,7 @@
     "uglify-es": "*"
   },
   "dependencies": {
+    "djbx": "^1.0.1",
     "utilise": "*"
   }
 }
