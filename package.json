@@ -8,10 +8,9 @@
     "url": "git://github.com/rijs/css.git"
   },
   "browser": {
-    "utilise/file": false
-  , "path": false
+    "utilise/file": false,
+    "path": false
   },
-
   "scripts": {
     "build": "npm run rollup && npm run minify && npm run gzip",
     "rollup": "rollup -c",

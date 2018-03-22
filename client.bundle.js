@@ -1,15 +1,9 @@
-var css = (function () {
+var css = (function (fs,djbx,path) {
 'use strict';
 
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-
-
-
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
+fs = fs && fs.hasOwnProperty('default') ? fs['default'] : fs;
+djbx = djbx && djbx.hasOwnProperty('default') ? djbx['default'] : djbx;
+path = path && path.hasOwnProperty('default') ? path['default'] : path;
 
 var includes = function includes(pattern){
   return function(d){
@@ -60,8 +54,7 @@ function isObject(d) {
 }
 
 function isLiteral(d) {
-  return typeof d == 'object' 
-      && !(d instanceof Array)
+  return d.constructor == Object
 }
 
 function isTruthy(d) {
@@ -118,6 +111,10 @@ var attr = function attr(name, value) {
           } 
 };
 
+var file = function file(name){
+  return fs.readFileSync(name, { encoding:'utf8' })
+};
+
 var to = { 
   arr: toArray
 , obj: toObject
@@ -141,11 +138,13 @@ function toObject(d) {
   }
 }
 
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
 var client = typeof window != 'undefined';
 
 var owner = client ? /* istanbul ignore next */ window : commonjsGlobal;
 
-var log = function log(ns){
+var log$1 = function log(ns){
   return function(d){
     if (!owner.console || !console.log.apply) { return d; }
     is_1.arr(arguments[2]) && (arguments[2] = arguments[2].length);
@@ -157,19 +156,26 @@ var log = function log(ns){
   }
 };
 
-var css = createCommonjsModule(function (module) {
 // -------------------------------------------
 // Exposes a convenient global instance 
 // -------------------------------------------
-module.exports = function css(ripple){
-  log$$1('creating');
+var css = function css(ripple){
+  log('creating');
   ripple.types['text/css'] = {
     header: 'text/css'
+  , ext: '*.css'
   , selector: function (res) { return ("[css~=\"" + (res.name) + "\"]"); }
   , extract: function (el) { return (attr("css")(el) || '').split(' '); }
   , check: function check(res){ return includes('.css')(res.name) }
+  , shortname: function (path$$1) { return basename(path$$1); }
+  , load: function load(res) {
+      res.body = file(res.headers.path);
+      res.headers['content-type'] = this.header;
+      ripple(res);
+      return ripple.resources[res.name]
+    }
   , parse: function parse(res){ 
-      res.headers.hash = djb(res.body);
+      res.headers.hash = res.headers.hash || djbx(res.body);
       return res
     }
   };
@@ -177,19 +183,9 @@ module.exports = function css(ripple){
   return ripple
 };
 
-var log$$1 = log('[ri/types/css]');
-
-var djb = function (str) {
-  var hash = 5381
-    , i = str.length;
-
-  while (i)
-    { hash = (hash * 33) ^ str.charCodeAt(--i); }
-
-  return hash >>> 0
-};
-});
+var log = log$1('[ri/types/css]');
+var basename = path.basename;
 
 return css;
 
-}());
+}(fs,djbx,path));
