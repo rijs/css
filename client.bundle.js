@@ -1,8 +1,7 @@
-var css = (function (fs,djbx,path) {
+var css = (function (fs,path) {
 'use strict';
 
 fs = fs && fs.hasOwnProperty('default') ? fs['default'] : fs;
-djbx = djbx && djbx.hasOwnProperty('default') ? djbx['default'] : djbx;
 path = path && path.hasOwnProperty('default') ? path['default'] : path;
 
 var includes = function includes(pattern){
@@ -140,6 +139,14 @@ function toObject(d) {
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+
+
+
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
 var client = typeof window != 'undefined';
 
 var owner = client ? /* istanbul ignore next */ window : commonjsGlobal;
@@ -155,6 +162,18 @@ var log$1 = function log(ns){
     return console.log.apply(console, args), d
   }
 };
+
+var djbx = createCommonjsModule(function (module) {
+module.exports = hash = function (str) {
+  var hash = 5381
+    , i = str.length;
+
+  while (i)
+    { hash = (hash * 33) ^ str.charCodeAt(--i); }
+
+  return hash >>> 0
+};
+});
 
 // -------------------------------------------
 // Exposes a convenient global instance 
@@ -188,4 +207,4 @@ var basename = path.basename;
 
 return css;
 
-}(fs,djbx,path));
+}(fs,path));
