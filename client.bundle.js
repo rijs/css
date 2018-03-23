@@ -1,14 +1,5 @@
-var css = (function (fs,path) {
+var css = (function () {
 'use strict';
-
-fs = fs && fs.hasOwnProperty('default') ? fs['default'] : fs;
-path = path && path.hasOwnProperty('default') ? path['default'] : path;
-
-var includes = function includes(pattern){
-  return function(d){
-    return d && d.indexOf && ~d.indexOf(pattern)
-  }
-};
 
 var is_1 = is;
 is.fn      = isFunction;
@@ -92,28 +83,6 @@ function isIn(set) {
   }
 }
 
-var attr = function attr(name, value) {
-  var args = arguments.length;
-  
-  return !is_1.str(name) && args == 2 ? attr(arguments[1]).call(this, arguments[0])
-       : !is_1.str(name) && args == 3 ? attr(arguments[1], arguments[2]).call(this, arguments[0])
-       :  function(el){
-            var ctx = this || {};
-            el = ctx.nodeName || is_1.fn(ctx.node) ? ctx : el;
-            el = el.node ? el.node() : el;
-            el = el.host || el;
-
-            return args > 1 && value === false ? el.removeAttribute(name)
-                 : args > 1                    ? (el.setAttribute(name, value), value)
-                 : el.attributes.getNamedItem(name) 
-                && el.attributes.getNamedItem(name).value
-          } 
-};
-
-var file = function file(name){
-  return fs.readFileSync(name, { encoding:'utf8' })
-};
-
 var to = { 
   arr: toArray
 , obj: toObject
@@ -163,8 +132,32 @@ var log$1 = function log(ns){
   }
 };
 
+var includes = function includes(pattern){
+  return function(d){
+    return d && d.indexOf && ~d.indexOf(pattern)
+  }
+};
+
+var attr = function attr(name, value) {
+  var args = arguments.length;
+  
+  return !is_1.str(name) && args == 2 ? attr(arguments[1]).call(this, arguments[0])
+       : !is_1.str(name) && args == 3 ? attr(arguments[1], arguments[2]).call(this, arguments[0])
+       :  function(el){
+            var ctx = this || {};
+            el = ctx.nodeName || is_1.fn(ctx.node) ? ctx : el;
+            el = el.node ? el.node() : el;
+            el = el.host || el;
+
+            return args > 1 && value === false ? el.removeAttribute(name)
+                 : args > 1                    ? (el.setAttribute(name, value), value)
+                 : el.attributes.getNamedItem(name) 
+                && el.attributes.getNamedItem(name).value
+          } 
+};
+
 var djbx = createCommonjsModule(function (module) {
-module.exports = hash = function (str) {
+module.exports = function (str) {
   var hash = 5381
     , i = str.length;
 
@@ -175,36 +168,23 @@ module.exports = hash = function (str) {
 };
 });
 
-// -------------------------------------------
-// Exposes a convenient global instance 
-// -------------------------------------------
-var css = function css(ripple){
-  log('creating');
-  ripple.types['text/css'] = {
-    header: 'text/css'
-  , ext: '*.css'
-  , selector: function (res) { return ("[css~=\"" + (res.name) + "\"]"); }
-  , extract: function (el) { return (attr("css")(el) || '').split(' '); }
-  , check: function check(res){ return includes('.css')(res.name) }
-  , shortname: function (path$$1) { return basename(path$$1); }
-  , load: function load(res) {
-      res.body = file(res.headers.path);
-      res.headers['content-type'] = this.header;
-      ripple(res);
-      return ripple.resources[res.name]
-    }
-  , parse: function parse(res){ 
-      res.headers.hash = res.headers.hash || djbx(res.body);
-      return res
-    }
-  };
-
-  return ripple
+var client_1 = function(ripple) {
+    return log("creating"), ripple.types["text/css"] = {
+        header: "text/css",
+        ext: "*.css",
+        selector: function (res) { return ("[css~=\"" + (res.name) + "\"]"); },
+        extract: function (el) { return (attr("css")(el) || "").split(" "); },
+        check: function (res) { return includes(".css")(res.name); },
+        shortname: function (path) { return basename(path); },
+        load: !1,
+        parse: function (res) { return (res.headers.hash = res.headers.hash || djbx(res.body), res); }
+    }, ripple;
 };
 
-var log = log$1('[ri/types/css]');
-var basename = path.basename;
+var log = log$1("[ri/types/css]");
 
-return css;
+var basename;
 
-}(fs,path));
+return client_1;
+
+}());

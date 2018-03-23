@@ -10,12 +10,12 @@ module.exports = function css(ripple){
   , extract: el => (attr(`css`)(el) || '').split(' ')
   , check(res){ return includes('.css')(res.name) }
   , shortname: path => basename(path)
-  , load(res) {
+  , load: !client && (res => {
       res.body = file(res.headers.path)
       res.headers['content-type'] = this.header
       ripple(res)
       return ripple.resources[res.name]
-    }
+    })
   , parse(res){ 
       res.headers.hash = res.headers.hash || hash(res.body)
       return res
@@ -25,9 +25,13 @@ module.exports = function css(ripple){
   return ripple
 }
 
-const includes = require('utilise/includes')
+const log = require('utilise/log')('[ri/types/css]')
+    , includes = require('utilise/includes')
+    , client = require('utilise/client')
     , attr = require('utilise/attr')
-    , file = require('utilise/file')
-    , log = require('utilise/log')('[ri/types/css]')
     , hash = require('djbx')
-    , { basename } = require('path')
+
+if (!client) {
+  var { basename } = require('path')
+    , file = require('utilise/file')
+}
