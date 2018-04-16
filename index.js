@@ -13,6 +13,7 @@ module.exports = function css(ripple){
   , load: !client && (res => {
       res.body = file(res.headers.path)
       res.headers['content-type'] = this.header
+      res.headers.vary = ({ name }, { platform }) => `name:${name},ua:${platform.name}-${platform.version}`// TODO: how high can this be?
       ripple(res)
       return ripple.resources[res.name]
     })
