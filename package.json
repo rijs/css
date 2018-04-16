@@ -25,10 +25,10 @@
     "chai": "*",
     "coveralls": "*",
     "istanbul": "*",
-    "mocha": "*",
+    "mocha": "^5.1.0",
     "mocha-lcov-reporter": "*",
     "popper": "*",
-    "rijs.core": "^1.2.2",
+    "rijs.core": "^1.2.3",
     "rollup-plugin-buble": "^0.16.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "djbx": "^1.0.3",
-    "utilise": "^2.3.1"
+    "utilise": "^2.3.3"
   }
 }
